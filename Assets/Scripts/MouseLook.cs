@@ -17,8 +17,7 @@ public class MouseLook : MonoBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        SetCursorLocked(true);
     }
 
     void Update()
@@ -35,7 +34,11 @@ public class MouseLook : MonoBehaviour
         float finalXRotation = xRotation + currentRecoil.x;
 
         transform.localRotation = Quaternion.Euler(finalXRotation, 0f, 0f);
-        playerBody.Rotate(Vector3.up * mouseX);
+
+        if (playerBody != null)
+        {
+            playerBody.Rotate(Vector3.up * mouseX);
+        }
     }
 
     public void AddRecoil(float pitchAmount, float yawAmount)
@@ -44,5 +47,29 @@ public class MouseLook : MonoBehaviour
             -pitchAmount,
             Random.Range(-yawAmount, yawAmount)
         );
+    }
+
+    public void SetSensitivity(float value)
+    {
+        mouseSensitivity = value;
+    }
+
+    public float GetSensitivity()
+    {
+        return mouseSensitivity;
+    }
+
+    public void SetCursorLocked(bool locked)
+    {
+        if (locked)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
     }
 }
