@@ -8,6 +8,7 @@ public class GunShoot : MonoBehaviour
     public int damage = 1;
     public float fireRate = 0.2f;
     public GameObject muzzleFlash;
+    public MuzzleShotLight muzzleShotLight;
 
     [Header("Ammo")]
     public int magazineSize = 10;
@@ -34,6 +35,11 @@ public class GunShoot : MonoBehaviour
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
+
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(false);
+        }
 
         if (UIManager.instance != null)
         {
@@ -109,9 +115,14 @@ public class GunShoot : MonoBehaviour
             gunEffectsController.PlayShotEffects();
         }
 
-        if (muzzleFlash != null)
+        if (muzzleFlash  != null)
         {
             StartCoroutine(ShowMuzzleFlash());
+        }
+
+        if (muzzleShotLight != null)
+        {
+            muzzleShotLight.Flash();
         }
 
         Ray ray;
