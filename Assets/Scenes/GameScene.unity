@@ -16785,9 +16785,9 @@ MonoBehaviour:
   usePellets: 0
   pelletCount: 1
   spreadAngle: 0
-  magazineSize: 12
+  magazineSize: 30
   startingAmmoInMagazine: 30
-  reserveAmmo: 30
+  reserveAmmo: 45
   maxReserveAmmo: 90
   reloadTime: 1.7
   mouseRecoilPitch: 2
