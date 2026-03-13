@@ -3,20 +3,6 @@ using System.Collections;
 
 public class GunShoot : MonoBehaviour
 {
-    [Header("Shooting")]
-    public float range = 100f;
-    public int damage = 1;
-    public float fireRate = 0.2f;
-    public GameObject muzzleFlash;
-    public MuzzleShotLight muzzleShotLight;
-
-    [Header("Ammo")]
-    public int magazineSize = 10;
-    public int currentAmmo = 10;
-    public int reserveAmmo = 50;
-    public int maxReserveAmmo = 100;
-    public float reloadTime = 1.5f;
-
     [Header("Audio")]
     public AudioClip gunShotSound;
     public AudioClip reloadSound;
@@ -24,10 +10,32 @@ public class GunShoot : MonoBehaviour
 
     [Header("References")]
     public MouseLook mouseLook;
-    public GunRecoil gunRecoil;
     public GunEffectsController gunEffectsController;
     public CameraShake cameraShake;
 
+    [Header("Current Weapon Runtime Data")]
+    public float range = 100f;
+    public int damage = 1;
+    public float fireRate = 0.2f;
+
+    public bool usePellets = false;
+    public int pelletCount = 1;
+    public float spreadAngle = 0f;
+
+    public int magazineSize = 10;
+    public int currentAmmo = 10;
+    public int reserveAmmo = 50;
+    public int maxReserveAmmo = 100;
+    public float reloadTime = 1.5f;
+
+    public float mouseRecoilPitch = 2.0f;
+    public float mouseRecoilYaw = 0.35f;
+
+    public GameObject muzzleFlash;
+    public MuzzleShotLight muzzleShotLight;
+    public GunRecoil gunRecoil;
+
+    private WeaponDefinition activeWeapon;
     private float nextTimeToFire = 0f;
     private AudioSource audioSource;
     private bool isReloading = false;
@@ -49,6 +57,11 @@ public class GunShoot : MonoBehaviour
 
     void Update()
     {
+        if (activeWeapon == null)
+        {
+            return;
+        }
+
         if (isReloading)
         {
             return;
@@ -81,9 +94,60 @@ public class GunShoot : MonoBehaviour
         }
     }
 
+    public void ApplyWeaponDefinition(WeaponDefinition weaponDefinition)
+    {
+        if (weaponDefinition == null)
+        {
+            Debug.LogError("ApplyWeaponDefinition hat eine leere WeaponDefinition bekommen!");
+            return;
+        }
+
+        activeWeapon = weaponDefinition;
+
+        range = activeWeapon.range;
+        damage = activeWeapon.damage;
+        fireRate = activeWeapon.fireRate;
+
+        usePellets = activeWeapon.usePellets;
+        pelletCount = Mathf.Max(1, activeWeapon.pelletCount);
+        spreadAngle = activeWeapon.spreadAngle;
+
+        magazineSize = activeWeapon.magazineSize;
+        currentAmmo = activeWeapon.startingAmmoInMagazine;
+        reserveAmmo = activeWeapon.reserveAmmo;
+        maxReserveAmmo = activeWeapon.maxReserveAmmo;
+        reloadTime = activeWeapon.reloadTime;
+
+        mouseRecoilPitch = activeWeapon.mouseRecoilPitch;
+        mouseRecoilYaw = activeWeapon.mouseRecoilYaw;
+
+        muzzleFlash = activeWeapon.muzzleFlash;
+        muzzleShotLight = activeWeapon.muzzleShotLight;
+        gunRecoil = activeWeapon.gunRecoil;
+
+        if (muzzleFlash != null)
+        {
+            muzzleFlash.SetActive(false);
+        }
+
+        if (gunRecoil != null)
+        {
+            gunRecoil.ResetRecoil();
+        }
+
+        if (UIManager.instance != null)
+        {
+            UIManager.instance.UpdateAmmo(currentAmmo, reserveAmmo);
+        }
+    }
+
     void Shoot()
     {
-        cameraShake.Shake(0.08f, 0.05f);
+        if (cameraShake != null)
+        {
+            cameraShake.Shake(0.08f, 0.05f);
+        }
+
         currentAmmo--;
 
         if (UIManager.instance != null)
@@ -96,26 +160,17 @@ public class GunShoot : MonoBehaviour
             audioSource.PlayOneShot(gunShotSound);
         }
 
-        if (gunRecoil == null)
-        {
-            Debug.LogError("GunRecoil Referenz fehlt in GunShoot!");
-        }
-        else
+        if (gunRecoil != null)
         {
             gunRecoil.Fire();
         }
 
         if (mouseLook != null)
         {
-            mouseLook.AddRecoil(2.0f, 0.35f);
+            mouseLook.AddRecoil(mouseRecoilPitch, mouseRecoilYaw);
         }
 
-        if (gunEffectsController != null)
-        {
-            gunEffectsController.PlayShotEffects();
-        }
-
-        if (muzzleFlash  != null)
+        if (muzzleFlash != null)
         {
             StartCoroutine(ShowMuzzleFlash());
         }
@@ -125,47 +180,96 @@ public class GunShoot : MonoBehaviour
             muzzleShotLight.Flash();
         }
 
-        Ray ray;
-
-        if (Camera.main != null)
+        if (usePellets)
         {
-            ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            ShootPellets();
         }
         else
         {
-            ray = new Ray(transform.position, transform.forward);
-        }
-
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, range))
-        {
-            EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
-
-            if (enemy == null)
-            {
-                enemy = hit.transform.GetComponentInParent<EnemyHealth>();
-            }
-
-            if (enemy != null)
-            {
-                enemy.TakeDamage(damage);
-
-                if (UIManager.instance != null)
-                {
-                    UIManager.instance.ShowHitMarker();
-                }
-
-                if (gunEffectsController != null)
-                {
-                    gunEffectsController.SpawnBloodHit(hit.point, hit.normal);
-                }
-            }
+            ShootSingleRay();
         }
 
         if (currentAmmo <= 0 && reserveAmmo > 0)
         {
             StartReload();
+        }
+    }
+
+    void ShootSingleRay()
+    {
+        Ray ray = CreateBaseRay();
+
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            HandleHit(hit);
+        }
+    }
+
+    void ShootPellets()
+    {
+        for (int i = 0; i < pelletCount; i++)
+        {
+            Ray ray = CreateSpreadRay();
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, range))
+            {
+                HandleHit(hit);
+            }
+        }
+    }
+
+    Ray CreateBaseRay()
+    {
+        if (Camera.main != null)
+        {
+            return new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        }
+
+        return new Ray(transform.position, transform.forward);
+    }
+
+    Ray CreateSpreadRay()
+    {
+        Transform rayOriginTransform = Camera.main != null ? Camera.main.transform : transform;
+
+        Vector3 forward = rayOriginTransform.forward;
+        Vector3 right = rayOriginTransform.right;
+        Vector3 up = rayOriginTransform.up;
+
+        float horizontalSpread = Random.Range(-spreadAngle, spreadAngle);
+        float verticalSpread = Random.Range(-spreadAngle, spreadAngle);
+
+        Vector3 spreadDirection = forward + right * horizontalSpread + up * verticalSpread;
+        spreadDirection.Normalize();
+
+        return new Ray(rayOriginTransform.position, spreadDirection);
+    }
+
+    void HandleHit(RaycastHit hit)
+    {
+        EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+
+        if (enemy == null)
+        {
+            enemy = hit.transform.GetComponentInParent<EnemyHealth>();
+        }
+
+        if (enemy != null)
+        {
+            enemy.TakeDamage(damage);
+
+            if (UIManager.instance != null)
+            {
+                UIManager.instance.ShowHitMarker();
+            }
+
+            if (gunEffectsController != null)
+            {
+                gunEffectsController.SpawnBloodHit(hit.point, hit.normal);
+            }
         }
     }
 

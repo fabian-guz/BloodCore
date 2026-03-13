@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
-    [SerializeField] private string gameSceneName = "GameScene";
+    [SerializeField] private string weaponSelectSceneName = "WeaponSelect";
 
     private void Start()
     {
@@ -15,7 +15,7 @@ public class MainMenuController : MonoBehaviour
     public void StartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(gameSceneName);
+        SceneManager.LoadScene(weaponSelectSceneName);
     }
 
     public void QuitGame()
