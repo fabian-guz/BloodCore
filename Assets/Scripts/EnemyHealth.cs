@@ -9,6 +9,7 @@ public class EnemyHealth : MonoBehaviour
     public EnemyHitFlash enemyHitFlash;
 
     private GunEffectsController gunEffectsController;
+    private bool isDead;
 
     void Start()
     {
@@ -17,6 +18,11 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+
+        if (isDead)
+        {
+            return;
+        }
         health -= damage;
 
         if (enemyHitFlash != null)
@@ -32,6 +38,12 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        if (isDead)
+        {
+            return;
+        }
+        isDead = true;
+
         if (gunEffectsController != null)
         {
             gunEffectsController.SpawnGroundBloodPuddle(transform.position);
