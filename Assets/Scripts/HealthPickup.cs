@@ -3,15 +3,21 @@ using System.Collections;
 
 public class HealthPickup : MonoBehaviour
 {
-    public int healAmount = 3;
+    [Header("Health Range")]
+    public int minHealAmount = 1;
+    public int maxHealAmount = 3;
+
+    [Header("Audio")]
     public AudioClip pickupSound;
 
     [HideInInspector]
     public PickupSpawner spawner;
 
+    private int healAmount;
+
     void Start()
     {
-        
+        healAmount = Random.Range(minHealAmount, maxHealAmount + 1);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -45,7 +51,7 @@ public class HealthPickup : MonoBehaviour
             AudioHelper.PlayClipAtPosition(pickupSound, transform.position, 0.7f);
         }
 
-        if (spawner  != null)
+        if (spawner != null)
         {
             spawner.RequestRespawn();
         }

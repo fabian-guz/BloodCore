@@ -3,15 +3,21 @@ using System.Collections;
 
 public class AmmoPickup : MonoBehaviour
 {
-    public int ammoAmount = 10;
+    [Header("Ammo Range")]
+    public int minAmmoAmount = 25;
+    public int maxAmmoAmount = 50;
+
+    [Header("Audio")]
     public AudioClip pickupSound;
 
     [HideInInspector]
     public PickupSpawner spawner;
 
+    private int ammoAmount;
+
     void Start()
     {
-        
+        ammoAmount = Random.Range(minAmmoAmount, maxAmmoAmount + 1);
     }
 
     private void OnTriggerEnter(Collider other)

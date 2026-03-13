@@ -1,52 +1,68 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 public class MuzzleShotLight : MonoBehaviour
 {
-    public Light shotLight;
-    public float flashIntensity = 4f;
-    public float flashDuration = 0.03f;
+    [SerializeField] private Light lightSource;
+    [SerializeField] private float flashIntensity = 4f;
+    [SerializeField] private float flashDuration = 0.04f;
 
-    private float timer = 0f;
+    private Coroutine flashRoutine;
+    private float defaultIntensity = 0f;
 
-    void Awake()
+    private void Awake()
     {
-        if (shotLight == null)
+        if (lightSource == null)
         {
-            shotLight = GetComponent<Light>();
+            lightSource = GetComponent<Light>();
         }
 
-        if (shotLight != null)
+        if (lightSource != null)
         {
-            shotLight.enabled = true;
-            shotLight.intensity = 0f;
+            defaultIntensity = 0f;
+            lightSource.intensity = 0f;
+            lightSource.enabled = false;
         }
     }
 
-    void Update()
+    private void OnEnable()
     {
-        if (shotLight == null)
+        if (lightSource == null)
         {
-            return;
+            lightSource = GetComponent<Light>();
         }
 
-        if (timer > 0f)
+        if (lightSource != null)
         {
-            timer -= Time.deltaTime;
-            shotLight.intensity = flashIntensity;
-        }
-        else
-        {
-            shotLight.intensity = 0f;
+            lightSource.intensity = 0f;
+            lightSource.enabled = false;
         }
     }
 
     public void Flash()
     {
-        if (shotLight == null)
+        if (lightSource == null)
         {
             return;
         }
 
-        timer = flashDuration;
+        if (flashRoutine != null)
+        {
+            StopCoroutine(flashRoutine);
+        }
+
+        flashRoutine = StartCoroutine(FlashRoutine());
+    }
+
+    private IEnumerator FlashRoutine()
+    {
+        lightSource.enabled = true;
+        lightSource.intensity = flashIntensity;
+
+        yield return new WaitForSeconds(flashDuration);
+
+        lightSource.intensity = defaultIntensity;
+        lightSource.enabled = false;
+        flashRoutine = null;
     }
 }

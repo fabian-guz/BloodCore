@@ -7,6 +7,9 @@ public class GunRecoil : MonoBehaviour
     public float recoilUp = 0.10f;
     public float recoilSide = 0.05f;
 
+    [Header("Direction")]
+    public bool invertBackRecoil = false;
+
     [Header("Rotation Recoil")]
     public float recoilX = -20f;
     public float recoilY = 8f;
@@ -29,8 +32,6 @@ public class GunRecoil : MonoBehaviour
     {
         startLocalPosition = transform.localPosition;
         startLocalRotation = transform.localRotation;
-
-        Debug.Log("GunRecoil Awake auf Objekt: " + gameObject.name);
     }
 
     private void Update()
@@ -47,12 +48,12 @@ public class GunRecoil : MonoBehaviour
 
     public void Fire()
     {
-        Debug.Log("GunRecoil Fire wurde aufgerufen auf: " + gameObject.name);
+        float backDirection = invertBackRecoil ? 1f : -1f;
 
         targetPosition += new Vector3(
             Random.Range(-recoilSide, recoilSide),
             recoilUp,
-            -recoilBack
+            recoilBack * backDirection
         );
 
         targetRotation += new Vector3(
