@@ -14,6 +14,10 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     public KeyCode dashKey = KeyCode.LeftShift; //Button for the dash
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip dashSound;
+
     [Header("UI Settings")]
     public TextMeshProUGUI dashStatusText;
 
@@ -78,11 +82,20 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void PlayDashSound()
+    {
+        if (audioSource != null && dashSound != null)
+        {
+            audioSource.PlayOneShot(dashSound);
+        }
+    }
+
 
     IEnumerator Dash()
     {
         isDashing = true;
         nextDashTime = Time.time + dashCooldown;
+        PlayDashSound();
 
         //Safes the time at the start of the Dash
         float startTime = Time.time;
