@@ -8,6 +8,8 @@ public class EnemyHealth : MonoBehaviour
 
     public EnemyHitFlash enemyHitFlash;
 
+    public int expReward = 5;
+
     private GunEffectsController gunEffectsController;
     private bool isDead;
 
@@ -23,6 +25,7 @@ public class EnemyHealth : MonoBehaviour
         {
             return;
         }
+
         health -= damage;
 
         if (enemyHitFlash != null)
@@ -43,6 +46,11 @@ public class EnemyHealth : MonoBehaviour
             return;
         }
         isDead = true;
+
+        if (ExperienceManager.instance != null)
+        {
+            ExperienceManager.instance.AddExperience(expReward);
+        }
 
         if (gunEffectsController != null)
         {

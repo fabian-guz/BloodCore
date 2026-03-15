@@ -29,11 +29,24 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         controller = GetComponent<CharacterController>();
+
+        if (ExperienceManager.instance != null && !ExperienceManager.instance.IsDashUnlocked())
+        {
+            if (dashStatusText != null)
+            {
+                dashStatusText.gameObject.SetActive(false);
+            }
+        }
     }
 
     void Update()
     {
-        UpdateDashUI();
+        bool canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsDashUnlocked();
+        // Don´t update the DashUI before unlocked
+        if (canDash)
+        {
+            UpdateDashUI();
+        }
         //Pauses the game while dashing
         if (isDashing)
         {
@@ -48,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(move * speed * Time.deltaTime);
 
         //Dash Logic
-        if (Input.GetKeyDown(dashKey) && Time.time >= nextDashTime)
+        if (canDash && Input.GetKeyDown(dashKey) && Time.time >= nextDashTime)
         {
             StartCoroutine(Dash());
         }
