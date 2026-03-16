@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class MainMenuController : MonoBehaviour
 {
     [SerializeField] private string weaponSelectSceneName = "WeaponSelect";
+    [SerializeField] private string skillTreeSceneName = "SkillTree";
 
     private void Start()
     {
@@ -16,6 +17,11 @@ public class MainMenuController : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(weaponSelectSceneName);
+    }
+
+    public void OpenSkillTree()
+    {
+        SceneManager.LoadScene(skillTreeSceneName);
     }
 
     public void QuitGame()
