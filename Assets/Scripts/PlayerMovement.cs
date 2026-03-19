@@ -14,6 +14,11 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     public KeyCode dashKey = KeyCode.LeftShift; //Button for the dash
 
+    [Header("Skill Settings")] 
+    public string dashSkillID = "Dash_01";
+    public string dashCooldown4SecSkillID = "Dash_02";
+    public string dashCooldown3SecSkillID = "Dash_03";
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip dashSound;
@@ -30,19 +35,23 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
-        if (ExperienceManager.instance != null && !ExperienceManager.instance.IsDashUnlocked())
+        if (ExperienceManager.instance != null && !ExperienceManager.instance.IsSkillUnlocked(dashSkillID))
         {
             if (dashStatusText != null)
             {
                 dashStatusText.gameObject.SetActive(false);
             }
         }
+        else
+        {
+            CheckDashSkillCooldown();
+        }
     }
 
     void Update()
     {
-        bool canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsDashUnlocked();
-        // Don´t update the DashUI before unlocked
+        bool canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(dashSkillID);
+        // Dont update the DashUI before unlocked
         if (canDash)
         {
             UpdateDashUI();
@@ -100,6 +109,20 @@ public class PlayerMovement : MonoBehaviour
         if (audioSource != null && dashSound != null)
         {
             audioSource.PlayOneShot(dashSound);
+        }
+    }
+
+    void CheckDashSkillCooldown()
+    {
+        if (ExperienceManager.instance.IsSkillUnlocked(dashCooldown3SecSkillID))
+        {
+            dashCooldown = 3f;
+            return;
+        }
+        if (ExperienceManager.instance.IsSkillUnlocked(dashCooldown4SecSkillID))
+        {
+            dashCooldown = 4f;
+            return;
         }
     }
 

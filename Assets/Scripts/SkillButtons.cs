@@ -4,37 +4,66 @@ using TMPro;
 
 public class SkillButton : MonoBehaviour
 {
-    public int skillCost = 50;
+    public SkillData skillData;
+
+    [Header("UI References")]
     public Button buyButton;
     public TextMeshProUGUI statusText;
-    public string skillName = "Dash-ability";
+
+    void OnEnable()
+    {
+        ExperienceManager.OnSkillTreeUpdated += RefreshUI;
+    }
+
+    void OnDisable()
+    {
+        ExperienceManager.OnSkillTreeUpdated -= RefreshUI;
+    }
 
     void Start()
     {
-        UpdateButtonUI();
+        RefreshUI();
     }
 
-    public void OnBuyDashClicked()
+    public void OnBuyClicked()
     {
-        if (ExperienceManager.instance.UnlockDash(skillCost))
+        if (ExperienceManager.instance.TryUnlockSkill(skillData))
         {
-            Debug.Log("Dash unlocked!");
-            UpdateButtonUI();
+            Debug.Log($"{skillData.skillName} unlocked!");
+            RefreshUI();
             FindFirstObjectByType<SkillTreeMenuController>()?.UpdateExpDisplay();
         }
     }
 
-    void UpdateButtonUI()
+    public void RefreshUI()
     {
-        if (ExperienceManager.instance.IsDashUnlocked())
+        if (skillData == null)
         {
-            buyButton.interactable = false;
-            statusText.text = "Bought";
+            return;
+        }
+
+        bool isBought = ExperienceManager.instance.IsSkillUnlocked(skillData.skillID);
+        bool canBuy = ExperienceManager.instance.GetTotalExperience() >= skillData.skillCost;
+        bool requirementsMet = skillData.requiredSkill == null || ExperienceManager.instance.IsSkillUnlocked(skillData.requiredSkill.skillID);
+
+        if (isBought)
+        {
+            SetState(false, "Bought", Color.green);
+        }
+        else if (!requirementsMet)
+        {
+            SetState(false, "Locked", Color.gray);
         }
         else
         {
-            buyButton.interactable = ExperienceManager.instance.GetTotalExperience() >= skillCost;
-            statusText.text = skillName + $" ({skillCost} EXP)";
+            SetState(canBuy, $"{skillData.skillName}\n ({skillData.skillCost} EXP)", canBuy ? Color.white : Color.red);
         }
+    }
+
+    private void SetState(bool interactable, string text, Color color)
+    {
+        buyButton.interactable = interactable;
+        statusText.text = text;
+        statusText.color = color;
     }
 }
