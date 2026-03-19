@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e385d3449e492549bf3796854a41509, type: 3}
+  m_Name: DashCooldown4Sec
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  skillName: Dash-Cooldown 4sec
+  skillCost: 200
+  skillID: Dash_02
+  isUnlocked: 0
+  requiredSkill: {fileID: 11400000, guid: cad0a750a0f54c74ba710f58d23ec000, type: 2}

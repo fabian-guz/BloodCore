@@ -3,6 +3,9 @@ using System.Collections;
 
 public class GunShoot : MonoBehaviour
 {
+    [Header("Skill Settings")] 
+    public string maxAmmoIncrease = "Ammo_02";
+    
     [Header("Audio")]
     public AudioClip gunShotSound;
     public AudioClip reloadSound;
@@ -138,6 +141,12 @@ public class GunShoot : MonoBehaviour
         if (UIManager.instance != null)
         {
             UIManager.instance.UpdateAmmo(currentAmmo, reserveAmmo);
+        }
+
+        if (ExperienceManager.instance.IsSkillUnlocked(maxAmmoIncrease))
+        {
+            int halfOfMaxReserveAmmo = activeWeapon.maxReserveAmmo / 2;
+            maxReserveAmmo = activeWeapon.maxReserveAmmo + halfOfMaxReserveAmmo;
         }
     }
 

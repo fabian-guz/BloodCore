@@ -13,6 +13,9 @@ public class PlayerHealth : MonoBehaviour
     private MouseLook mouseLook;
     private CameraShake cameraShake;
     private PlayerDamageFeedback damageFeedback;
+    
+    [Header("Skill Settings")] 
+    public string maxHealthIncrease = "Health_01";
 
     void Start()
     {
@@ -34,6 +37,11 @@ public class PlayerHealth : MonoBehaviour
         if (damageFeedback != null)
         {
             damageFeedback.UpdateHealthVignette(health, maxHealth);
+        }
+
+        if (ExperienceManager.instance.IsSkillUnlocked(maxHealthIncrease))
+        {
+            maxHealth = 15;
         }
     }
 

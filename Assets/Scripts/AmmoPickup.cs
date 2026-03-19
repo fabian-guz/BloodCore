@@ -3,6 +3,9 @@ using System.Collections;
 
 public class AmmoPickup : MonoBehaviour
 {
+    [Header("Skill Settings")] 
+    public string betterAmmoPickups = "Ammo_01";
+    
     [Header("Ammo Range")]
     public int minAmmoAmount = 25;
     public int maxAmmoAmount = 50;
@@ -17,6 +20,11 @@ public class AmmoPickup : MonoBehaviour
 
     void Start()
     {
+        if (ExperienceManager.instance.IsSkillUnlocked(betterAmmoPickups))
+        {
+            minAmmoAmount = 40;
+            maxAmmoAmount = 80;
+        }
         ammoAmount = Random.Range(minAmmoAmount, maxAmmoAmount + 1);
     }
 
