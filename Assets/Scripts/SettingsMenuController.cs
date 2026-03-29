@@ -17,17 +17,21 @@ public class SettingsMenuController : MonoBehaviour
     [Header("Defaults")]
     [SerializeField] private float defaultVolume = 1f;
     [SerializeField] private float defaultSensitivity = 100f;
+    [SerializeField] private int defaultFPSIndex = 0;
     [SerializeField] private bool defaultFullscreen = true;
+
+    private FPSManager fpsManager;
 
     private const string VolumeKey = "Settings_Volume";
     private const string SensitivityKey = "Settings_Sensitivity";
-    private const string FullscreenKey = "Settings_Fullscreen";
+    private const string FullscreenKey = "Settings_Fullscreen";  
 
     private bool isInitialized = false;
     private bool currentFullscreenState;
 
     private void Start()
     {
+        fpsManager = FindFirstObjectByType<FPSManager>();
         InitializeSettings();
     }
 
@@ -179,6 +183,12 @@ public class SettingsMenuController : MonoBehaviour
         if (sensitivitySlider != null)
         {
             sensitivitySlider.SetValueWithoutNotify(defaultSensitivity);
+        }
+
+        if (fpsManager != null)
+        {
+            fpsManager.SetFPS(defaultFPSIndex);
+            fpsManager.fpsDropdown.SetValueWithoutNotify(defaultFPSIndex);
         }
 
         currentFullscreenState = defaultFullscreen;

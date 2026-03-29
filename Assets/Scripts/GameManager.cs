@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     public AudioClip gameOverSound;
 
     private AudioSource audioSource;
+    private SettingsMenuController settingsMenuController;
 
     void Awake()
     {
@@ -30,6 +31,13 @@ public class GameManager : MonoBehaviour
         if (UIManager.instance != null)
         {
             UIManager.instance.UpdateScore(score);
+        }
+
+        settingsMenuController = FindFirstObjectByType<SettingsMenuController>();
+        
+        if (settingsMenuController != null)
+        {
+            settingsMenuController.InitializeSettings();
         }
     }
 

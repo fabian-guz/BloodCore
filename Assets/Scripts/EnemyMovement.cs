@@ -18,7 +18,7 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
-        if (player == null)
+        if (player == null || agent == null || !agent.enabled || !agent.isOnNavMesh)
         {
             return;
         }

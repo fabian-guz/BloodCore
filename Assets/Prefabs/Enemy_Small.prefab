@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RotatePickup
   rotationSpeed: 60
-  floatHeight: 0.76
+  floatHeight: 0.45
   floatSpeed: 4
 --- !u!1 &3596536938980599368
 GameObject:
@@ -149,7 +149,7 @@ GameObject:
   - component: {fileID: -5820650364530259576}
   - component: {fileID: 2419931392612148066}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: Enemy_Small
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,7 +165,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.0004382002, y: 0.00043439277, z: 0.0043630823, w: 0.99999034}
   m_LocalPosition: {x: 0, y: 1, z: 8}
-  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8163580638148303525}
@@ -251,7 +251,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.2, z: 1}
+  m_Size: {x: 1.1, y: 1.2, z: 1.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1835217612441382629
 MonoBehaviour:
@@ -265,7 +265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6293fe8b17256d64e9171a14b9279457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  maxHealth: 3
+  maxHealth: 2
   spawner: {fileID: 0}
   deathSound: {fileID: 8300000, guid: 84bdf8954e01a9c46ab2f390a17b9e10, type: 3}
   enemyHitFlash: {fileID: 0}
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2472f145a29d2b46879f80bb0dc4c8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  stoppingDistance: 1.8
+  stoppingDistance: 1.42
 --- !u!114 &8988819366610863650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
   attackDamage: 1
-  attackRange: 2
+  attackRange: 1.65
   attackRate: 1
 --- !u!114 &1398462935368124578
 MonoBehaviour:
@@ -321,16 +321,16 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.4
-  m_Speed: 3.4
+  m_Speed: 3.8
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 110
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 3
-  m_BaseOffset: 2
+  m_BaseOffset: 2.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &-5820650364530259576

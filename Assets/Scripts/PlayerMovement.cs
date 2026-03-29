@@ -15,16 +15,16 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode dashKey = KeyCode.LeftShift; //Button for the dash
 
     [Header("Skill Settings")] 
-    public string dashSkillID = "Dash_01";
-    public string dashCooldown4SecSkillID = "Dash_02";
-    public string dashCooldown3SecSkillID = "Dash_03";
+    public string dashSkillID = "Dash_01"; // Dash skill ID
+    public string dashCooldown4SecSkillID = "Dash_02"; // If the player has this skill, the dash cooldown will be reduced to 4 seconds
+    public string dashCooldown3SecSkillID = "Dash_03"; // If the player has this skill, the dash cooldown will be reduced to 3 seconds
 
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip dashSound;
 
-    [Header("UI Settings")]
-    public TextMeshProUGUI dashStatusText;
+    [Header("Effects")]
+    public CameraShake cameraShake; // Reference to the CameraShake script
 
     private CharacterController controller;
     private Vector3 velocity;
@@ -35,14 +35,7 @@ public class PlayerMovement : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
 
-        if (ExperienceManager.instance != null && !ExperienceManager.instance.IsSkillUnlocked(dashSkillID))
-        {
-            if (dashStatusText != null)
-            {
-                dashStatusText.gameObject.SetActive(false);
-            }
-        }
-        else
+        if (ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(dashSkillID))
         {
             CheckDashSkillCooldown();
         }
@@ -51,16 +44,19 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         bool canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(dashSkillID);
+
         // Dont update the DashUI before unlocked
         if (canDash)
         {
-            UpdateDashUI();
+            UIManager.instance.UpdateDashUI(nextDashTime);
         }
+
         //Pauses the game while dashing
         if (isDashing)
         {
             return;
         }
+        
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
@@ -82,26 +78,6 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
-    }
-
-    void UpdateDashUI()
-    {
-        if (dashStatusText == null)
-        {
-            return;
-        }
-        if (Time.time < nextDashTime)
-        {
-            //Calc remaining seconds
-            float remainingTime = nextDashTime - Time.time;
-            dashStatusText.text = string.Format("Dash in: {0:F1}s", remainingTime);
-            dashStatusText.color = Color.red;
-        }
-        else
-        {
-            dashStatusText.text = "Dash ready (SHIFT)";
-            dashStatusText.color = Color.yellow;
-        }
     }
 
     void PlayDashSound()
@@ -132,6 +108,11 @@ public class PlayerMovement : MonoBehaviour
         isDashing = true;
         nextDashTime = Time.time + dashCooldown;
         PlayDashSound();
+
+        if (cameraShake != null)
+        {
+            cameraShake.Shake(0.15f, 0.25f);
+        }
 
         //Safes the time at the start of the Dash
         float startTime = Time.time;

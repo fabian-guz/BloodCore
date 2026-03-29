@@ -26,7 +26,7 @@ public class MainMenuController : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Spiel wird beendet.");
+        Debug.Log("Stopped game.");
         Application.Quit();
     }
 }
