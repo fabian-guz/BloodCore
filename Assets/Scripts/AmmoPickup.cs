@@ -4,7 +4,7 @@ using System.Collections;
 public class AmmoPickup : MonoBehaviour
 {
     [Header("Skill Settings")] 
-    public string betterAmmoPickups = "Ammo_01";
+    public string betterAmmoPickups = "Ammo_01"; // Name of the skill that improves ammo pickups
     
     [Header("Ammo Range")]
     public int minAmmoAmount = 25;

@@ -3,23 +3,26 @@ using UnityEngine;
 
 public class GameHighscoreTracker : MonoBehaviour
 {
+    [Header("UI References")]
     [SerializeField] private TMP_Text scoreText;
+
+    [Header("Settings")]
     [SerializeField] private string playerPrefsKey = "Highscore";
     [SerializeField] private bool resetHighscoreOnStart = false;
 
     private int currentScore;
     private int savedHighscore;
-
     private void Start()
     {
         if (resetHighscoreOnStart)
         {
             PlayerPrefs.DeleteKey(playerPrefsKey);
             PlayerPrefs.Save();
-            Debug.Log("Highscore wurde zurückgesetzt.");
+            Debug.Log("Highscore got reseted");
         }
 
         savedHighscore = PlayerPrefs.GetInt(playerPrefsKey, 0);
+
         UpdateHighscoreFromText();
     }
 

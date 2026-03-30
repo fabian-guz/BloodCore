@@ -2,14 +2,37 @@
 using UnityEngine.AI;
 using System.Collections;
 
+[System.Serializable]
+public class EnemyType
+{
+    public string name;
+    public GameObject prefab;  
+    public int health;
+    public float scale = 1f;    // Default scale is 1
+    [Range(0, 100)] public int spawnChance; // Chance in percantage to spawn this enemy type
+}
+
+[System.Serializable]
+public class BossEnemyType
+{
+    public string name;
+    public GameObject prefab;  
+    public int health;
+    public float scale = 1f;    // Default scale is 1
+}
+
 public class EnemySpawner : MonoBehaviour
 {
-    public GameObject enemyPrefab;
+    public EnemyType[] enemyTypes;  // Array of different enemy types to spawn
+    public BossEnemyType bossEnemyType; // Boss enemy type to spawn on certain waves
     public Transform[] spawnPoints;
+
+    public Transform[] bossSpawnPoints;
 
     public float timeBetweenWaves = 3f;
     public int currentWave = 1;
     public int enemiesPerWave = 3;
+    public int smallEnemysPerBossWave = 2; // Number of small enemies to spawn alongside the boss on boss waves
 
     public float delayBetweenEnemySpawns = 0.6f;
     public float minDistanceToPlayer = 6f;
@@ -23,6 +46,7 @@ public class EnemySpawner : MonoBehaviour
     public AudioClip[] numberVoices;
 
     private int enemiesAlive = 0;
+    private int bossEnemiesAlive = 0;
     private bool isSpawningWave = false;
     private AudioSource audioSource;
     private Transform player;
@@ -62,50 +86,157 @@ public class EnemySpawner : MonoBehaviour
 
     IEnumerator SpawnWave()
     {
-        enemiesAlive = enemiesPerWave;
-
-        for (int i = 0; i < enemiesPerWave; i++)
+        if (currentWave % 5 == 0 && bossEnemyType != null)  // Every 5th wave, spawn a boss enemy instead of regular enemies
         {
-            SpawnEnemy();
-            yield return new WaitForSeconds(delayBetweenEnemySpawns);
+            bossEnemiesAlive = currentWave / 5; // Set enemies alive to the number of bosses for this wave (1 boss for wave 5, 3 bosses for wave 15, etc.)
+            if (currentWave == 10)
+            {
+                bossEnemyType.health = bossEnemyType.health * 2;
+                bossEnemiesAlive = 1; // Only spawn 1 boss on wave 10, but make it stronger
+            }
+
+            enemiesAlive = bossEnemiesAlive;
+
+            for (int i = 0; i < bossEnemiesAlive; i++)
+            {
+                SpawnBossEnemy();
+                yield return new WaitForSeconds(delayBetweenEnemySpawns);
+            }
+
+            if(currentWave >= 15)
+            {
+                enemiesAlive += smallEnemysPerBossWave; // Add the small enemies to the total count of enemies alive for this wave
+                for(int i = 0; i < smallEnemysPerBossWave; i++)
+                {
+                    SpawnEnemy(true);
+                    yield return new WaitForSeconds(delayBetweenEnemySpawns);
+                }
+                smallEnemysPerBossWave += 2;
+            }
+        }
+        else // Spawn regular enemies for the wave
+        {
+            enemiesAlive = enemiesPerWave;
+
+            for (int i = 0; i < enemiesPerWave; i++)
+            {
+                SpawnEnemy(false);
+                yield return new WaitForSeconds(delayBetweenEnemySpawns);
+            }
         }
 
-        isSpawningWave = false;
+        isSpawningWave = false; 
     }
 
-    void SpawnEnemy()
+    void SpawnEnemy(bool isBossWave)
     {
         Vector3 spawnPosition;
 
-        if (!TryFindValidSpawnPosition(out spawnPosition))
+        if (!TryFindValidSpawnPosition(out spawnPosition, false))
         {
-            Debug.LogWarning("Kein guter Spawnpunkt gefunden");
+            Debug.LogWarning("No valid spawn position found for enemy. Skipping spawn.");
             enemiesAlive--;
             return;
         }
+        
+        EnemyType selectedEnemyType = enemyTypes[Random.Range(0, enemyTypes.Length)];   // Randomly select an enemy type from the array
+        if (isBossWave)
+        {
+            selectedEnemyType = enemyTypes[0]; // Always spawn the first enemy type on boss waves (you can customize this logic as needed)
+        }
 
-      
+        GameObject enemy = Instantiate(selectedEnemyType.prefab, spawnPosition, Quaternion.identity);   // Spawn the enemy prefab at the valid position
+        
+        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.enabled = false; // Disable NavMeshAgent to prevent movement issues during spawn
+        }
+
+        if (selectedEnemyType.scale != 1f)
+        {
+            Debug.Log($"Spawning {selectedEnemyType.name} with scale {selectedEnemyType.scale}");
+        }
+        enemy.transform.localScale = Vector3.one * selectedEnemyType.scale; // Apply scale from EnemyType
+        float heightOffset = 0.1f * selectedEnemyType.scale; // Adjust height offset based on scale
+        agent.Warp(spawnPosition + Vector3.up * heightOffset); // Warp the agent to the spawn position with height offset
+
+        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.maxHealth = selectedEnemyType.health;  // Set health from EnemyType
+            enemyHealth.spawner = this;
+        }
+
+        if (agent != null)
+        {
+            agent.enabled = true; // Re-enable NavMeshAgent after setting up the enemy
+        }
 
         if (spawnSound != null)
         {
             AudioHelper.PlayClipAtPosition(spawnSound, spawnPosition, 0.9f);
         }
+    }
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+    void SpawnBossEnemy()
+    {
+        Vector3 spawnPosition;
 
-        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        if (!TryFindValidSpawnPosition(out spawnPosition, true))
+        {
+            Debug.LogWarning("No valid spawn position found for boss enemy. Skipping spawn.");
+            return;
+        }
+
+        GameObject bossEnemy = Instantiate(bossEnemyType.prefab, spawnPosition, Quaternion.identity);
+        
+        NavMeshAgent agent = bossEnemy.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.enabled = false; // Disable NavMeshAgent to prevent movement issues during spawn
+        }
+
+        if (bossEnemyType.scale != 1f)
+        {
+            Debug.Log($"Spawning {bossEnemyType.name} with scale {bossEnemyType.scale}");
+        }
+        bossEnemy.transform.localScale = Vector3.one * bossEnemyType.scale; // Apply scale from BossEnemyType
+        float heightOffset = 0.05f * bossEnemyType.scale; // Adjust height offset based on scale
+        agent.Warp(spawnPosition + Vector3.up * heightOffset); // Warp the agent to the spawn position with height offset
+
+        EnemyHealth enemyHealth = bossEnemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
+            enemyHealth.maxHealth = bossEnemyType.health;  // Set health from BossEnemyType
             enemyHealth.spawner = this;
+        }
+
+        if (agent != null)
+        {
+            agent.enabled = true; // Re-enable NavMeshAgent after setting up the boss enemy
+        }
+
+        if (spawnSound != null)
+        {
+            AudioHelper.PlayClipAtPosition(spawnSound, spawnPosition, 1.0f);
         }
     }
 
-    bool TryFindValidSpawnPosition(out Vector3 validPosition)
+    bool TryFindValidSpawnPosition(out Vector3 validPosition, bool isBoss)
     {
         for (int attempt = 0; attempt < maxSpawnAttempts; attempt++)
         {
-            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
+            Transform spawnPoint;
+            if (!isBoss)
+            {
+                spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            }
+            else
+            {
+                spawnPoint = bossSpawnPoints[Random.Range(0, bossSpawnPoints.Length)];
+            }
+            
             Vector3 randomOffset = new Vector3(
                 Random.Range(-randomSpawnRadius, randomSpawnRadius),
                 0f,
@@ -196,7 +327,7 @@ public class EnemySpawner : MonoBehaviour
             if (tens < numberVoices.Length && numberVoices[tens] != null)
             {
                 audioSource.PlayOneShot(numberVoices[tens], 0.7f);
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.65f);
             }
         }
 

@@ -10,14 +10,17 @@ public class WeaponSelectMenuController : MonoBehaviour
     {
         public string weaponName;
         public Sprite weaponIcon;
+        public int unlockHighscoreRequirement;
     }
 
     [Header("UI References")]
     [SerializeField] private Image weaponImage;
     [SerializeField] private TMP_Text weaponNameText;
+    [SerializeField] private Button confirmButton;
+    [SerializeField] private Image lockImage;
 
     [Header("Weapon Select Data")]
-    [SerializeField] private WeaponSelectEntry[] weapons;
+    [SerializeField] public WeaponSelectEntry[] weapons;
 
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "GameScene";
@@ -25,6 +28,7 @@ public class WeaponSelectMenuController : MonoBehaviour
 
     private int currentWeaponIndex = 0;
     private const string SelectedWeaponIndexKey = "SelectedWeaponIndex";
+    private const string playerHighscoreKey = "Highscore";
 
     private void Start()
     {
@@ -35,7 +39,7 @@ public class WeaponSelectMenuController : MonoBehaviour
 
         if (weapons == null || weapons.Length == 0)
         {
-            Debug.LogError("Keine Waffen im WeaponSelectMenuController eingetragen!");
+            Debug.LogError("No weapons assigned in the WeaponSelectMenuController.");
             return;
         }
 
@@ -107,6 +111,40 @@ public class WeaponSelectMenuController : MonoBehaviour
         {
             weaponImage.sprite = currentWeapon.weaponIcon;
             weaponImage.enabled = currentWeapon.weaponIcon != null;
+        }
+
+        if (currentWeapon.unlockHighscoreRequirement > PlayerPrefs.GetInt(playerHighscoreKey, 0))
+        {
+            if (confirmButton != null)
+            {
+                confirmButton.interactable = false;
+            }
+
+            if (weaponNameText != null)
+            {
+                weaponNameText.text += " (LOCKED)\nScore required: " + currentWeapon.unlockHighscoreRequirement.ToString();
+            }
+
+            if (lockImage != null)
+            {
+                lockImage.enabled = true;
+            }
+        }
+        else
+        {
+            if (confirmButton != null)
+            {
+                confirmButton.interactable = true;
+            }
+
+            if (weaponNameText != null)
+            {
+                weaponNameText.text = currentWeapon.weaponName;
+            }
+            if (lockImage != null)
+            {
+                lockImage.enabled = false;
+            }
         }
     }
 }

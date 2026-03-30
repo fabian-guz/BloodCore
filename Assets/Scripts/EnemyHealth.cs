@@ -2,7 +2,8 @@
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 3;
+    public int maxHealth = 3;
+    private int currentHealth;
     public EnemySpawner spawner;
     public AudioClip deathSound;
 
@@ -15,25 +16,25 @@ public class EnemyHealth : MonoBehaviour
 
     void Start()
     {
+        currentHealth = maxHealth;
         gunEffectsController = FindObjectOfType<GunEffectsController>();
     }
 
     public void TakeDamage(int damage)
     {
-
         if (isDead)
         {
             return;
         }
 
-        health -= damage;
+        currentHealth -= damage;
 
         if (enemyHitFlash != null)
         {
             enemyHitFlash.Flash();
         }
 
-        if (health <= 0)
+        if (currentHealth <= 0)
         {
             Die();
         }

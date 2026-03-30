@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI waveText;
     public TextMeshProUGUI ammoText;
     public TextMeshProUGUI pickupPopupText;
+    public TextMeshProUGUI dashStatusText;
 
     public GameObject gameOverText;
     public GameObject hitMarkerText;
@@ -50,6 +51,34 @@ public class UIManager : MonoBehaviour
         {
             pickupPopupText.text = "";
             pickupPopupText.gameObject.SetActive(false);
+        }
+
+        if (ExperienceManager.instance != null && !ExperienceManager.instance.IsSkillUnlocked("Dash_01"))
+        {
+            if (dashStatusText != null)
+            {
+                dashStatusText.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void UpdateDashUI(float nextDashTime)
+    {
+        if (dashStatusText == null)
+        {
+            return;
+        }
+        if (Time.time < nextDashTime)
+        {
+            //Calc remaining seconds
+            float remainingTime = nextDashTime - Time.time;
+            dashStatusText.text = string.Format("Dash in: {0:F1}s", remainingTime);
+            dashStatusText.color = Color.red;
+        }
+        else
+        {
+            dashStatusText.text = "Dash ready (SHIFT)";
+            dashStatusText.color = Color.yellow;
         }
     }
 
