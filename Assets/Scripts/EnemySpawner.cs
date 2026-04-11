@@ -155,7 +155,9 @@ public class EnemySpawner : MonoBehaviour
 
         if (selectedEnemyType.scale != 1f)
         {
+            #if UNITY_EDITOR
             Debug.Log($"Spawning {selectedEnemyType.name} with scale {selectedEnemyType.scale}");
+            #endif
         }
         enemy.transform.localScale = Vector3.one * selectedEnemyType.scale; // Apply scale from EnemyType
         float heightOffset = 0.1f * selectedEnemyType.scale; // Adjust height offset based on scale
@@ -199,7 +201,9 @@ public class EnemySpawner : MonoBehaviour
 
         if (bossEnemyType.scale != 1f)
         {
+            #if UNITY_EDITOR
             Debug.Log($"Spawning {bossEnemyType.name} with scale {bossEnemyType.scale}");
+            #endif
         }
         bossEnemy.transform.localScale = Vector3.one * bossEnemyType.scale; // Apply scale from BossEnemyType
         float heightOffset = 0.05f * bossEnemyType.scale; // Adjust height offset based on scale

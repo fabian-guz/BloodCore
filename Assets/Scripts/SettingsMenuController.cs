@@ -8,6 +8,7 @@ public class SettingsMenuController : MonoBehaviour
     [SerializeField] private Slider volumeSlider;
     [SerializeField] private Slider sensitivitySlider;
     [SerializeField] private Toggle fullscreenToggle;
+    [SerializeField] private Toggle timeInMenuToggle;
     [SerializeField] private TMP_Text volumeValueText;
     [SerializeField] private TMP_Text sensitivityValueText;
 
@@ -19,19 +20,24 @@ public class SettingsMenuController : MonoBehaviour
     [SerializeField] private float defaultSensitivity = 100f;
     [SerializeField] private int defaultFPSIndex = 0;
     [SerializeField] private bool defaultFullscreen = true;
+    [SerializeField] private bool defaultTrackPlayTimeInMenuState = true;
 
     private FPSManager fpsManager;
+    PlayTimeTracker playTimeTracker;
 
     private const string VolumeKey = "Settings_Volume";
     private const string SensitivityKey = "Settings_Sensitivity";
     private const string FullscreenKey = "Settings_Fullscreen";  
+    private const string TrackPlayTimeInMenuKey = "Settings_TrackPlayTimeInMenu";
 
     private bool isInitialized = false;
     private bool currentFullscreenState;
+    private bool currentTrackPlayTimeInMenuState;
 
     private void Start()
     {
         fpsManager = FindFirstObjectByType<FPSManager>();
+        playTimeTracker = FindFirstObjectByType<PlayTimeTracker>();
         InitializeSettings();
     }
 
@@ -76,7 +82,7 @@ public class SettingsMenuController : MonoBehaviour
         float savedVolume = PlayerPrefs.GetFloat(VolumeKey, defaultVolume);
         float savedSensitivity = PlayerPrefs.GetFloat(SensitivityKey, defaultSensitivity);
         currentFullscreenState = PlayerPrefs.GetInt(FullscreenKey, defaultFullscreen ? 1 : 0) == 1;
-
+        currentTrackPlayTimeInMenuState = PlayerPrefs.GetInt(TrackPlayTimeInMenuKey, defaultTrackPlayTimeInMenuState ? 1 : 0) == 1;
         if (volumeSlider != null)
         {
             volumeSlider.SetValueWithoutNotify(savedVolume);
@@ -90,6 +96,11 @@ public class SettingsMenuController : MonoBehaviour
         if (fullscreenToggle != null)
         {
             fullscreenToggle.SetIsOnWithoutNotify(currentFullscreenState);
+        }
+
+        if (timeInMenuToggle != null)
+        {
+            timeInMenuToggle.SetIsOnWithoutNotify(currentTrackPlayTimeInMenuState);
         }
     }
 
@@ -106,6 +117,7 @@ public class SettingsMenuController : MonoBehaviour
         }
 
         ApplyFullscreen(currentFullscreenState);
+        ApplyTrackPlayTimeInMenu(currentTrackPlayTimeInMenuState);
     }
 
     public void OnVolumeChanged(float value)
@@ -146,6 +158,26 @@ public class SettingsMenuController : MonoBehaviour
         RefreshUI();
     }
 
+    public void ToggleTrackPlayTimeInMenu()
+    {
+        #if UNITY_EDITOR
+        Debug.Log("ToggleTrackPlayTimeInMenu called. New value: " + !currentTrackPlayTimeInMenuState);
+        #endif
+
+        SetTrackPlayTimeInMenuState(!currentTrackPlayTimeInMenuState);
+    }
+
+    private void SetTrackPlayTimeInMenuState(bool trackPlayTime)
+    {
+        currentTrackPlayTimeInMenuState = trackPlayTime;
+        ApplyTrackPlayTimeInMenu(currentTrackPlayTimeInMenuState);
+
+        PlayerPrefs.SetInt(TrackPlayTimeInMenuKey, currentTrackPlayTimeInMenuState ? 1 : 0);
+        PlayerPrefs.Save();
+
+        RefreshUI();
+    }
+
     private void ApplyVolume(float value)
     {
         AudioListener.volume = Mathf.Clamp01(value);
@@ -173,6 +205,18 @@ public class SettingsMenuController : MonoBehaviour
         }
     }
 
+    private void ApplyTrackPlayTimeInMenu(bool trackPlayTime)
+    {
+        if (playTimeTracker != null)
+        {
+            playTimeTracker.trackInMainMenu = trackPlayTime;
+
+            #if UNITY_EDITOR
+            Debug.Log("PlayTimeTracker trackInMainMenu set to: " + trackPlayTime);
+            #endif
+        }
+    }
+
     public void ResetSettings()
     {
         if (volumeSlider != null)
@@ -192,14 +236,17 @@ public class SettingsMenuController : MonoBehaviour
         }
 
         currentFullscreenState = defaultFullscreen;
+        currentTrackPlayTimeInMenuState = defaultTrackPlayTimeInMenuState;
 
         ApplyVolume(defaultVolume);
         ApplySensitivity(defaultSensitivity);
         ApplyFullscreen(currentFullscreenState);
+        ApplyTrackPlayTimeInMenu(currentTrackPlayTimeInMenuState);
 
         PlayerPrefs.SetFloat(VolumeKey, defaultVolume);
         PlayerPrefs.SetFloat(SensitivityKey, defaultSensitivity);
         PlayerPrefs.SetInt(FullscreenKey, currentFullscreenState ? 1 : 0);
+        PlayerPrefs.SetInt(TrackPlayTimeInMenuKey, currentTrackPlayTimeInMenuState ? 1 : 0);
         PlayerPrefs.Save();
 
         RefreshUI();
@@ -210,6 +257,11 @@ public class SettingsMenuController : MonoBehaviour
         if (fullscreenToggle != null)
         {
             fullscreenToggle.SetIsOnWithoutNotify(currentFullscreenState);
+        }
+
+        if (timeInMenuToggle != null)
+        {
+            timeInMenuToggle.SetIsOnWithoutNotify(currentTrackPlayTimeInMenuState);
         }
 
         UpdateValueTexts();
