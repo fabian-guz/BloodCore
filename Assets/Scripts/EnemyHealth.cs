@@ -17,7 +17,7 @@ public class EnemyHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        gunEffectsController = FindObjectOfType<GunEffectsController>();
+        gunEffectsController = FindFirstObjectByType<GunEffectsController>();
     }
 
     public void TakeDamage(int damage)
