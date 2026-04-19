@@ -21,10 +21,22 @@ public class BossEnemyType
     public float scale = 1f;    // Default scale is 1
 }
 
+[System.Serializable]
+public class RangedEnemyType
+{
+    public string name;
+    public GameObject prefab;
+    public int health;
+    public float scale = 1f;    // Default scale is 1
+    public int startWave = 8;
+    public int countPerWave = 0;
+}
+
 public class EnemySpawner : MonoBehaviour
 {
     public EnemyType[] enemyTypes;  // Array of different enemy types to spawn
     public BossEnemyType bossEnemyType; // Boss enemy type to spawn on certain waves
+    public RangedEnemyType rangedEnemyType; // Ranged enemy type to start spawning from a certain wave
     public Transform[] spawnPoints;
 
     public Transform[] bossSpawnPoints;
@@ -123,6 +135,18 @@ public class EnemySpawner : MonoBehaviour
                 SpawnEnemy(false);
                 yield return new WaitForSeconds(delayBetweenEnemySpawns);
             }
+
+            if (rangedEnemyType != null && rangedEnemyType.prefab != null && currentWave >= rangedEnemyType.startWave)
+            {
+                int rangedCount = rangedEnemyType.countPerWave;
+                enemiesAlive += rangedCount; // Add the ranged enemies to the total count of enemies alive
+
+                for (int i = 0; i < rangedCount; i++)
+                {
+                    SpawnRangedEnemy();
+                    yield return new WaitForSeconds(delayBetweenEnemySpawns);
+                }
+            }
         }
 
         isSpawningWave = false; 
@@ -131,54 +155,33 @@ public class EnemySpawner : MonoBehaviour
     void SpawnEnemy(bool isBossWave)
     {
         Vector3 spawnPosition;
-
+ 
         if (!TryFindValidSpawnPosition(out spawnPosition, false))
         {
             Debug.LogWarning("No valid spawn position found for enemy. Skipping spawn.");
             enemiesAlive--;
             return;
         }
-        
-        EnemyType selectedEnemyType = enemyTypes[Random.Range(0, enemyTypes.Length)];   // Randomly select an enemy type from the array
-        if (isBossWave)
-        {
-            selectedEnemyType = enemyTypes[0]; // Always spawn the first enemy type on boss waves (you can customize this logic as needed)
-        }
+ 
+        EnemyType selectedType = isBossWave
+            ? enemyTypes[0]
+            : enemyTypes[Random.Range(0, enemyTypes.Length)];
+ 
+        SpawnEnemyAt(selectedType.prefab, spawnPosition, selectedType.scale, selectedType.health);
+    }
 
-        GameObject enemy = Instantiate(selectedEnemyType.prefab, spawnPosition, Quaternion.identity);   // Spawn the enemy prefab at the valid position
-        
-        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
-        if (agent != null)
+    void SpawnRangedEnemy()
+    {
+        Vector3 spawnPosition;
+ 
+        if (!TryFindValidSpawnPosition(out spawnPosition, false))
         {
-            agent.enabled = false; // Disable NavMeshAgent to prevent movement issues during spawn
+            Debug.LogWarning("No valid spawn position found for ranged enemy. Skipping spawn.");
+            enemiesAlive--;
+            return;
         }
-
-        if (selectedEnemyType.scale != 1f)
-        {
-            #if UNITY_EDITOR
-            Debug.Log($"Spawning {selectedEnemyType.name} with scale {selectedEnemyType.scale}");
-            #endif
-        }
-        enemy.transform.localScale = Vector3.one * selectedEnemyType.scale; // Apply scale from EnemyType
-        float heightOffset = 0.1f * selectedEnemyType.scale; // Adjust height offset based on scale
-        agent.Warp(spawnPosition + Vector3.up * heightOffset); // Warp the agent to the spawn position with height offset
-
-        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-        if (enemyHealth != null)
-        {
-            enemyHealth.maxHealth = selectedEnemyType.health;  // Set health from EnemyType
-            enemyHealth.spawner = this;
-        }
-
-        if (agent != null)
-        {
-            agent.enabled = true; // Re-enable NavMeshAgent after setting up the enemy
-        }
-
-        if (spawnSound != null)
-        {
-            AudioHelper.PlayClipAtPosition(spawnSound, spawnPosition, 0.9f);
-        }
+ 
+        SpawnEnemyAt(rangedEnemyType.prefab, spawnPosition, rangedEnemyType.scale, rangedEnemyType.health);
     }
 
     void SpawnBossEnemy()
@@ -225,6 +228,38 @@ public class EnemySpawner : MonoBehaviour
         {
             AudioHelper.PlayClipAtPosition(spawnSound, spawnPosition, 1.0f);
         }
+    }
+
+    void SpawnEnemyAt(GameObject prefab, Vector3 spawnPosition, float scale, int health)
+    {
+        GameObject enemy = Instantiate(prefab, spawnPosition, Quaternion.identity);
+        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
+ 
+        if (agent != null) agent.enabled = false;
+ 
+        enemy.transform.localScale = Vector3.one * scale;
+        float heightOffset = 0.1f * scale;
+ 
+        if (agent != null)
+        {
+            agent.Warp(spawnPosition + Vector3.up * heightOffset);
+            agent.enabled = true;
+        }
+ 
+        EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
+        if (enemyHealth != null)
+        {
+            enemyHealth.maxHealth = health;
+            enemyHealth.spawner = this;
+        }
+ 
+        if (spawnSound != null){
+            AudioHelper.PlayClipAtPosition(spawnSound, spawnPosition, 0.9f);
+        }
+
+        #if UNITY_EDITOR
+        Debug.Log($"Spawned {prefab.name} with scale {scale}");
+        #endif
     }
 
     bool TryFindValidSpawnPosition(out Vector3 validPosition, bool isBoss)
@@ -304,8 +339,18 @@ public class EnemySpawner : MonoBehaviour
         yield return new WaitForSeconds(timeBetweenWaves);
 
         currentWave++;
-        enemiesPerWave += 2;
 
+        if (currentWave >= 8 && currentWave % 4 == 0)
+        {
+            //Every 4 waves, increase the number of enemies by 2 but one of them is a ranged enemy starting from wave 8
+            enemiesPerWave += 1;
+            rangedEnemyType.countPerWave += 1;
+        }
+        else
+        {
+            enemiesPerWave += 2;
+        }
+        
         StartWave();
     }
 

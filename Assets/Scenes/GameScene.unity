@@ -3741,7 +3741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3e64c450256cf4e9f41cab74b264f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupSpawner
-  pickupPrefab: {fileID: 4350525324548088764, guid: 64ee2924d7db226498391efbda9d4da0, type: 3}
+  pickupPrefab: {fileID: 6269117864247523305, guid: 8511d601255ba0344bd64f66283365a6, type: 3}
   spawnPoints:
   - {fileID: 655755648}
   - {fileID: 1839785587}
@@ -7074,7 +7074,7 @@ Transform:
   m_GameObject: {fileID: 655755647}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9.39, y: 0.5, z: -3.02}
+  m_LocalPosition: {x: -9.39, y: 0.7, z: -3.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7241,6 +7241,13 @@ MonoBehaviour:
     prefab: {fileID: 3596536938980599368, guid: 03fd47924cdc0014b856b7e302047f9b, type: 3}
     health: 40
     scale: 3
+  rangedEnemyType:
+    name: Ranged_Enemy
+    prefab: {fileID: 3596536938980599368, guid: e2fa9e4c670afa14bb482727ae12c7fc, type: 3}
+    health: 2
+    scale: 1
+    startWave: 8
+    countPerWave: 0
   spawnPoints:
   - {fileID: 1600809798}
   - {fileID: 1648366284}
@@ -8049,7 +8056,7 @@ Transform:
   m_GameObject: {fileID: 755539230}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.93, y: 0.5, z: -12.99}
+  m_LocalPosition: {x: 2.93, y: 0.7, z: -12.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8393,7 +8400,7 @@ Transform:
   m_GameObject: {fileID: 808602133}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.3, y: 0.5, z: 13.81}
+  m_LocalPosition: {x: -16.3, y: 0.7, z: 13.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9435,7 +9442,7 @@ Transform:
   m_GameObject: {fileID: 919894848}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -22.52, y: 0.5, z: -20.71}
+  m_LocalPosition: {x: -22.52, y: 0.7, z: -20.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9644,7 +9651,7 @@ Transform:
   m_GameObject: {fileID: 961820483}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.46, y: 0.5, z: -10.08}
+  m_LocalPosition: {x: 0.46, y: 0.7, z: -10.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11081,7 +11088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3e64c450256cf4e9f41cab74b264f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickupSpawner
-  pickupPrefab: {fileID: 3737683398276792101, guid: 0fa5d283c6924b546bd3ce56fc315f59, type: 3}
+  pickupPrefab: {fileID: 2351766581413215632, guid: 575743c136253094e86ee8c3b1385df6, type: 3}
   spawnPoints:
   - {fileID: 1243291364}
   - {fileID: 2016541164}
@@ -11755,7 +11762,7 @@ Transform:
   m_GameObject: {fileID: 1170914615}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.79, y: 0.5, z: -24.6}
+  m_LocalPosition: {x: -12.79, y: 0.7, z: -24.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12047,7 +12054,7 @@ Transform:
   m_GameObject: {fileID: 1175824172}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.13, y: 0.5, z: -13.11}
+  m_LocalPosition: {x: -13.13, y: 0.7, z: -13.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12333,11 +12340,17 @@ MonoBehaviour:
   dashCooldown: 5
   dashDuration: 0.2
   dashKey: 304
+  jumpHeight: 1.5
+  jumpCooldown: 2
+  jumpKey: 32
+  coyoteTime: 0.15
   dashSkillID: Dash_01
   dashCooldown4SecSkillID: Dash_02
   dashCooldown3SecSkillID: Dash_03
+  jumpSkillID: Jump_01
   audioSource: {fileID: 1216939295}
   dashSound: {fileID: 8300000, guid: d30eeb772eac2f44db3e794a2191982c, type: 3}
+  jumpSound: {fileID: 8300000, guid: 72edbb26a10fdf045af20a884359cf48, type: 3}
   cameraShake: {fileID: 330585549}
 --- !u!114 &1216939293
 MonoBehaviour:
@@ -12815,7 +12828,7 @@ Transform:
   m_GameObject: {fileID: 1243291363}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.45, y: 0.5, z: 13.81}
+  m_LocalPosition: {x: 8.45, y: 0.7, z: 13.81}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13059,7 +13072,7 @@ Transform:
   m_GameObject: {fileID: 1319080174}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.57, y: 0.5, z: -4.69}
+  m_LocalPosition: {x: -24.57, y: 0.7, z: -4.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13294,7 +13307,9 @@ Transform:
   - {fileID: 1823693920}
   - {fileID: 919894849}
   - {fileID: 1110044732}
+  - {fileID: 1753982136}
   - {fileID: 299602534}
+  - {fileID: 1748895072}
   m_Father: {fileID: 1996369049}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1387193252
@@ -13412,7 +13427,7 @@ Transform:
   m_GameObject: {fileID: 1393477750}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -33.52, y: 0.5, z: -26.21}
+  m_LocalPosition: {x: -33.52, y: 0.7, z: -26.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -14312,7 +14327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunShoot
   maxAmmoIncrease: Ammo_02
-  gunShotSound: {fileID: 8300000, guid: 0e8718052c4feb74fa8db41013f7dae5, type: 3}
+  gunShotSound: {fileID: 8300000, guid: 70fc08cdbcdcc36469e10f3e0de53d1c, type: 3}
   reloadSound: {fileID: 8300000, guid: e26c4afd865d5f04197f5acc72367268, type: 3}
   emptyMagazineSound: {fileID: 8300000, guid: a6fadea708802604bb0168ae480a2478, type: 3}
   mouseLook: {fileID: 330585548}
@@ -15141,7 +15156,7 @@ Transform:
   m_GameObject: {fileID: 1611491936}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 22.58, y: 0.5, z: 9.52}
+  m_LocalPosition: {x: 22.58, y: 0.7, z: 9.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16417,7 +16432,7 @@ Transform:
   m_GameObject: {fileID: 1699079726}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 27.76, y: 0.5, z: -30.27}
+  m_LocalPosition: {x: 27.76, y: 0.7, z: -30.27}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16588,6 +16603,100 @@ MonoBehaviour:
   muzzleFlash: {fileID: 356009173}
   muzzleShotLight: {fileID: 356009175}
   gunRecoil: {fileID: 1739189488}
+--- !u!1 &1748895071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1748895072}
+  - component: {fileID: 1748895073}
+  m_Layer: 0
+  m_Name: HealthManager_Originale
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1748895072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748895071}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1377686205}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1748895073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748895071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3e64c450256cf4e9f41cab74b264f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickupSpawner
+  pickupPrefab: {fileID: 4350525324548088764, guid: 64ee2924d7db226498391efbda9d4da0, type: 3}
+  spawnPoints: []
+  respawnDelay: 10
+--- !u!1 &1753982135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1753982136}
+  - component: {fileID: 1753982137}
+  m_Layer: 0
+  m_Name: AmmoManager_Originale
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1753982136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753982135}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1377686205}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1753982137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753982135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa3e64c450256cf4e9f41cab74b264f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickupSpawner
+  pickupPrefab: {fileID: 3737683398276792101, guid: 0fa5d283c6924b546bd3ce56fc315f59, type: 3}
+  spawnPoints: []
+  respawnDelay: 10
 --- !u!43 &1760148465
 Mesh:
   m_ObjectHideFlags: 0
@@ -17345,7 +17454,7 @@ Transform:
   m_GameObject: {fileID: 1823693919}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.2, y: 0.5, z: 23.2}
+  m_LocalPosition: {x: 24.2, y: 0.7, z: 23.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17488,7 +17597,7 @@ Transform:
   m_GameObject: {fileID: 1839785586}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.67, y: 0.5, z: 21.37}
+  m_LocalPosition: {x: -24.67, y: 0.7, z: 21.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -17524,7 +17633,7 @@ Transform:
   m_GameObject: {fileID: 1870350474}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.64, y: 0.5, z: -25.35}
+  m_LocalPosition: {x: 10.64, y: 0.7, z: -25.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19350,7 +19459,7 @@ Transform:
   m_GameObject: {fileID: 2016541163}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 26.5}
+  m_LocalPosition: {x: 0, y: 0.7, z: 26.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
