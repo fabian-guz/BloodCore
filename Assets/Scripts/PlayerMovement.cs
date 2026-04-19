@@ -14,14 +14,22 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.2f;
     public KeyCode dashKey = KeyCode.LeftShift; //Button for the dash
 
+    [Header("Jump Settings")]
+    public float jumpHeight = 1.5f; // Height of the jump
+    public float jumpCooldown = 10f; // Cooldown time between jumps
+    public KeyCode jumpKey = KeyCode.Space; //Button for the jump
+    public float coyoteTime = 0.15f; // Time window to allow jump input after leaving a platform
+
     [Header("Skill Settings")] 
     public string dashSkillID = "Dash_01"; // Dash skill ID
     public string dashCooldown4SecSkillID = "Dash_02"; // If the player has this skill, the dash cooldown will be reduced to 4 seconds
     public string dashCooldown3SecSkillID = "Dash_03"; // If the player has this skill, the dash cooldown will be reduced to 3 seconds
+    public string jumpSkillID = "Jump_01"; // Jump skill ID
 
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip dashSound;
+    public AudioClip jumpSound;
 
     [Header("Effects")]
     public CameraShake cameraShake; // Reference to the CameraShake script
@@ -29,7 +37,12 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private Vector3 velocity;
     private float nextDashTime = 0f;
+    private float nextJumpTime = 0f;
     private bool isDashing = false;
+
+    private bool canDash;
+    private bool canJump;
+    private float coyoteTimeCounter = 0f;
 
     void Start()
     {
@@ -39,12 +52,13 @@ public class PlayerMovement : MonoBehaviour
         {
             CheckDashSkillCooldown();
         }
+
+        canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(dashSkillID);
+        canJump = ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(jumpSkillID);
     }
 
     void Update()
     {
-        bool canDash = ExperienceManager.instance != null && ExperienceManager.instance.IsSkillUnlocked(dashSkillID);
-
         // Dont update the DashUI before unlocked
         if (canDash)
         {
@@ -55,6 +69,20 @@ public class PlayerMovement : MonoBehaviour
         if (isDashing)
         {
             return;
+        }
+
+        if (controller.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
+        if (controller.isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime; // Reset coyote time when grounded
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime; // Decrease coyote time when in the air
         }
         
         float x = Input.GetAxis("Horizontal");
@@ -71,9 +99,13 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Dash());
         }
 
-        if (controller.isGrounded && velocity.y < 0)
+        //Jump Logic
+        if (canJump && Input.GetKeyDown(jumpKey) && coyoteTimeCounter > 0f && Time.time >= nextJumpTime)
         {
-            velocity.y = -2f;
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            coyoteTimeCounter = 0f;
+            nextJumpTime = Time.time + jumpCooldown;
+            PlayJumpSound();
         }
 
         velocity.y += gravity * Time.deltaTime;
@@ -85,6 +117,14 @@ public class PlayerMovement : MonoBehaviour
         if (audioSource != null && dashSound != null)
         {
             audioSource.PlayOneShot(dashSound);
+        }
+    }
+
+    void PlayJumpSound()
+    {
+        if (audioSource != null && jumpSound != null)
+        {
+            audioSource.PlayOneShot(jumpSound);
         }
     }
 

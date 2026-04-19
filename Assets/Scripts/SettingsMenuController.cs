@@ -23,7 +23,7 @@ public class SettingsMenuController : MonoBehaviour
     [SerializeField] private bool defaultTrackPlayTimeInMenuState = true;
 
     private FPSManager fpsManager;
-    PlayTimeTracker playTimeTracker;
+    private PlayTimeTracker playTimeTracker;
 
     private const string VolumeKey = "Settings_Volume";
     private const string SensitivityKey = "Settings_Sensitivity";
